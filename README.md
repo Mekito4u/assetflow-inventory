@@ -30,7 +30,7 @@
 
 ```bash
 # 1. Клонируй репозиторий
-git clone https://github.com/ваш-ник/assetflow-inventory.git
+git clone https://github.com/Mekito4u/assetflow-inventory.git
 cd assetflow-inventory
 
 # 2. Установи зависимости
@@ -48,9 +48,9 @@ python manage.py seed_data
 
 # 7. Запусти сервер
 python manage.py runserver
-
-Перейди по адресу http://localhost:8000
 ```
+Перейди по адресу http://localhost:8000
+
 
 ## 📁 Структура проекта
 
@@ -89,11 +89,11 @@ assetflow_project/                 # Корневая директория пр�
 
 
 ### Use Case Diagram
-![Use Case Diagram](docs/diagrams/use_case/assetflow_use_case.png)
+*Файл: `docs/diagrams/use_case/assetflow_use_case.png`*
 
 ### Бизнес-процессы (BPMN)
 **Процесс выдачи оборудования:**
-![BPMN Process](docs/diagrams/bpmn/equipment_request.png)
+*Файл: `docs/diagrams/bpmn/equipment_request.png`*
 
 ### Требования
 - [Системные требования](/docs/requirements/system_requirements.md)
