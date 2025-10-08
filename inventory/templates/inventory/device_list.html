@@ -1,0 +1,45 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="stats">
+    <div class="stat-card">
+        <h3>📦 Всего</h3>
+        <p style="font-size: 24px; margin: 10px 0; color: #2c3e50;">{{ stats.total }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>✅ Доступно</h3>
+        <p style="font-size: 24px; margin: 10px 0; color: #27ae60;">{{ stats.available }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>🔄 Используется</h3>
+        <p style="font-size: 24px; margin: 10px 0; color: #e74c3c;">{{ stats.in_use }}</p>
+    </div>
+</div>
+
+<h2>{{ title }}</h2>
+
+{% for device in devices %}
+    <div class="device-card status-{{ device.status }}">
+        <h3>{{ device.model }} <small>({{ device.inventory_number }})</small></h3>
+        <p><strong>Тип:</strong> {{ device.device_type.name }}</p>
+        <p><strong>Статус:</strong>
+            {% if device.status == 'available' %}
+                <span style="color: #27ae60;">✅ Доступно</span>
+            {% elif device.status == 'in_use' %}
+                <span style="color: #e74c3c;">🔄 У сотрудника</span>
+            {% else %}
+                <span style="color: #95a5a6;">⚠️ На ремонте</span>
+            {% endif %}
+        </p>
+        {% if device.purchase_date %}
+            <p><strong>Куплено:</strong> {{ device.purchase_date }}</p>
+        {% endif %}
+    </div>
+{% empty %}
+    <div class="device-card">
+        <p>Оборудование не найдено</p>
+    </div>
+{% endfor %}
+{% endblock %}
