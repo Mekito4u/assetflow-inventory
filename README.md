@@ -89,11 +89,11 @@ assetflow_project/                 # Корневая директория пр�
 
 
 ### Use Case Diagram
-![Use Case Diagram](docs/diagrams/use_case/assetflow_use_case.png)
+*Файл: `docs/diagrams/use_case/assetflow_use_case.png`*
 
 ### Бизнес-процессы (BPMN)
 **Процесс выдачи оборудования:**
-![BPMN Process](docs/diagrams/bpmn/equipment_request.png)
+*Файл: `docs/diagrams/bpmn/equipment_request.png`*
 
 ### Требования
 - [Системные требования](/docs/requirements/system_requirements.md)
