@@ -30,7 +30,7 @@
 
 ```bash
 # 1. Клонируй репозиторий
-git clone https://github.com/ваш-ник/assetflow-inventory.git
+git clone https://github.com/Mekito4u/assetflow-inventory.git
 cd assetflow-inventory
 
 # 2. Установи зависимости
