@@ -1,0 +1,21 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Ремонты{% endblock %}
+
+{% block content %}
+<h2>Оборудование в ремонте</h2>
+
+{% for repair in repairs %}
+<div class="device-card">
+    <h3>{{ repair.device.model }} ({{ repair.device.inventory_number }})</h3>
+    <p><strong>Сообщил:</strong> {{ repair.reported_by.full_name }}</p>
+    <p><strong>Описание:</strong> {{ repair.description }}</p>
+    <p><strong>Дата:</strong> {{ repair.created_at|date:"d.m.Y H:i" }}</p>
+    <a href="{% url 'complete_repair' repair.id %}" class="btn">Завершить ремонт</a>
+</div>
+{% empty %}
+<div class="device-card">
+    <p>Нет оборудования в ремонте</p>
+</div>
+{% endfor %}
+{% endblock %}

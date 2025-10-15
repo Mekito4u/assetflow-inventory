@@ -1,0 +1,27 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Статистика поломок{% endblock %}
+
+{% block content %}
+<h2>Статистика поломок</h2>
+
+<div class="stats">
+    <div class="stat-card">
+        <div>Всего поломок</div>
+        <div style="font-size: 24px;">{{ total_repairs }}</div>
+    </div>
+    <div class="stat-card">
+        <div>Отремонтировано</div>
+        <div style="font-size: 24px; color: #28a745;">{{ completed_repairs }}</div>
+    </div>
+</div>
+
+<h3>История поломок</h3>
+{% for repair in repairs %}
+<div class="device-card">
+    <p><strong>Оборудование:</strong> {{ repair.device.model }}</p>
+    <p><strong>Статус:</strong> {{ repair.get_status_display }}</p>
+    <p><strong>Дата:</strong> {{ repair.created_at|date:"d.m.Y H:i" }}</p>
+</div>
+{% endfor %}
+{% endblock %}

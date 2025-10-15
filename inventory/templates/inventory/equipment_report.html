@@ -1,0 +1,23 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Отчёт по движениям{% endblock %}
+
+{% block content %}
+<h2>История движений оборудования</h2>
+
+{% for movement in movements %}
+<div class="device-card">
+    <p><strong>Оборудование:</strong> {{ movement.device.model }} ({{ movement.device.inventory_number }})</p>
+    <p><strong>Сотрудник:</strong> {{ movement.employee.full_name }}</p>
+    <p><strong>Операция:</strong> {{ movement.get_movement_type_display }}</p>
+    <p><strong>Дата:</strong> {{ movement.timestamp|date:"d.m.Y H:i" }}</p>
+    {% if movement.notes %}
+        <p><strong>Примечание:</strong> {{ movement.notes }}</p>
+    {% endif %}
+</div>
+{% empty %}
+<div class="device-card">
+    <p>Нет данных о движениях оборудования</p>
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Завершить ремонт{% endblock %}
+
+{% block content %}
+<h2>Завершение ремонта: {{ repair.device.model }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <p>Подтвердите завершение ремонта оборудования:</p>
+    <p><strong>{{ repair.device.model }} ({{ repair.device.inventory_number }})</strong></p>
+    <p><strong>Проблема:</strong> {{ repair.description }}</p>
+    <button type="submit" class="btn">Подтвердить завершение ремонта</button>
+</form>
+{% endblock %}

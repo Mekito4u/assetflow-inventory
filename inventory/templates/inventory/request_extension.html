@@ -1,0 +1,20 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Продление заявки{% endblock %}
+
+{% block content %}
+<h2>Продление заявки на {{ request.device.model }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <div style="margin-bottom: 15px;">
+        <label>Новая дата возврата:</label>
+        <input type="date" name="new_return_date" style="padding: 8px; width: 200px;" required>
+    </div>
+    <div style="margin-bottom: 15px;">
+        <label>Причина продления:</label>
+        <textarea name="reason" style="width: 100%; padding: 8px;" required></textarea>
+    </div>
+    <button type="submit" class="btn">Подать заявку на продление</button>
+</form>
+{% endblock %}

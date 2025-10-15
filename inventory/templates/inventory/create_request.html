@@ -1,0 +1,19 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Создать заявку{% endblock %}
+
+{% block content %}
+<h2>Создать заявку на {{ device.model }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div style="margin-bottom: 15px;">
+        <label>Цель использования:</label>
+        <textarea name="purpose" style="width: 100%; padding: 8px; height: 80px;" placeholder="Опишите цель использования оборудования" required></textarea>
+    </div>
+
+    <button type="submit" class="btn">Создать заявку</button>
+    <a href="{% url 'device_list' %}" class="btn" style="background: #6c757d;">Отмена</a>
+</form>
+{% endblock %}

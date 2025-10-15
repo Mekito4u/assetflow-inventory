@@ -1,0 +1,31 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Сообщить о поломке{% endblock %}
+
+{% block content %}
+<h2>Сообщить о поломке: {{ device.model }}</h2>
+
+<div class="device-card">
+    <p><strong>Инвентарный номер:</strong> {{ device.inventory_number }}</p>
+    <p><strong>Тип:</strong> {{ device.device_type.name }}</p>
+    <p><strong>Модель:</strong> {{ device.model }}</p>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div style="margin-bottom: 15px;">
+        <label>Описание проблемы:</label>
+        <textarea name="description" style="width: 100%; padding: 8px; height: 120px;" placeholder="Подробно опишите проблему с оборудованием..." required></textarea>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn" style="background: #dc3545;">Сообщить о поломке</button>
+        <a href="{% url 'device_list' %}" class="btn" style="background: #6c757d;">Отмена</a>
+    </div>
+</form>
+
+<div style="margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7;">
+    <p><strong>Внимание:</strong> После сообщения о поломке оборудование будет автоматически передано в ремонт и станет недоступно для использования.</p>
+</div>
+{% endblock %}
