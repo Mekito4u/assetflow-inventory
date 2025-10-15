@@ -1,0 +1,57 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Управление заявками{% endblock %}
+
+{% block content %}
+<h2>Заявки на рассмотрении</h2>
+
+{% for req in pending_requests %}
+<div class="device-card">
+    <h3>Заявка #{{ req.id }}</h3>
+    <p><strong>Сотрудник:</strong> {{ req.employee.full_name }}</p>
+    <p><strong>Оборудование:</strong> {{ req.device.model }} ({{ req.device.inventory_number }})</p>
+    <p><strong>Цель:</strong> {{ req.purpose }}</p>
+    <p><strong>Создана:</strong> {{ req.created_at|date:"d.m.Y H:i" }}</p>
+
+    <div style="margin-top: 15px;">
+        <a href="{% url 'update_request_status' req.id 'approved' %}" class="btn">Одобрить</a>
+        <a href="{% url 'update_request_status' req.id 'rejected' %}" style="background: #6c757d;" class="btn">Отклонить</a>
+    </div>
+</div>
+{% empty %}
+<div class="device-card">
+    <p>Нет заявок на рассмотрении</p>
+</div>
+{% endfor %}
+
+<h2>Активные заявки (одобренные)</h2>
+
+{% for req in active_requests %}
+<div class="device-card">
+    <h3>Заявка #{{ req.id }}</h3>
+    <p><strong>Сотрудник:</strong> {{ req.employee.full_name }}</p>
+    <p><strong>Оборудование:</strong> {{ req.device.model }} ({{ req.device.inventory_number }})</p>
+    <p><strong>Цель:</strong> {{ req.purpose }}</p>
+    <p><strong>Выдано:</strong> {{ req.updated_at|date:"d.m.Y H:i" }}</p>
+
+    {% for repair_id, repair in repairs.items %}
+            {% if repair_id == req.id %}
+                <div style="margin: 10px 0; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7;">
+                    <p><strong>⚠️ Оборудование в ремонте</strong></p>
+                    <p><strong>Причина:</strong> {{ repair.description }}</p>
+                    <p><strong>Сообщил:</strong> {{ repair.reported_by.full_name }}</p>
+                    <p><strong>Дата сообщения:</strong> {{ repair.created_at|date:"d.m.Y H:i" }}</p>
+                </div>
+        {% endif %}
+    {% endfor %}
+
+    <div style="margin-top: 15px;">
+        <a href="{% url 'return_device' req.id %}" class="btn" style="background: #28a745;">Принять возврат</a>
+    </div>
+</div>
+{% empty %}
+<div class="device-card">
+    <p>Нет активных заявок</p>
+</div>
+{% endfor %}
+{% endblock %}

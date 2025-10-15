@@ -1,0 +1,42 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Оборудование сотрудника{% endblock %}
+
+{% block content %}
+<h2>Оборудование сотрудника: {{ employee.full_name }}</h2>
+<p><strong>Должность:</strong> {{ employee.position }}</p>
+<p><strong>Отдел:</strong> {{ employee.department }}</p>
+
+<h3>Заявки и оборудование</h3>
+
+{% for req in requests %}
+<div class="device-card">
+    <h3>{{ req.device.model }} ({{ req.device.inventory_number }})</h3>
+    <p><strong>Статус заявки:</strong> 
+        {% if req.status == 'pending' %}
+            <span style="color: #ffc107;">На рассмотрении</span>
+        {% elif req.status == 'approved' %}
+            <span style="color: #28a745;">Одобрена</span>
+        {% elif req.status == 'rejected' %}
+            <span style="color: #dc3545;">Отклонена</span>
+        {% else %}
+            <span style="color: #6c757d;">Завершена</span>
+        {% endif %}
+    </p>
+    <p><strong>Цель:</strong> {{ req.purpose }}</p>
+    <p><strong>Создана:</strong> {{ req.created_at|date:"d.m.Y H:i" }}</p>
+    
+    {% if req.planned_return_date %}
+        <p><strong>Планируемый возврат:</strong> {{ req.planned_return_date }}</p>
+    {% endif %}
+    
+    {% if req.status == 'approved' and user.is_authenticated and user.userprofile.role == 'employee' %}
+        <a href="{% url 'request_extension' req.id %}" class="btn">Продлить заявку</a>
+    {% endif %}
+</div>
+{% empty %}
+<div class="device-card">
+    <p>У сотрудника нет заявок на оборудование</p>
+</div>
+{% endfor %}
+{% endblock %}

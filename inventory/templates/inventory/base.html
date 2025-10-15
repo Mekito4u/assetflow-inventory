@@ -3,53 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AssetFlow - Учёт оборудования{% endblock %}</title>
+    <title>{% block title %}AssetFlow{% endblock %}</title>
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            max-width: 1200px;
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
-            background: #f5f5f5;
+            line-height: 1.5;
+            color: #333;
         }
         .header {
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 15px;
             margin-bottom: 30px;
         }
+        .nav {
+            margin-top: 15px;
+        }
         .stats {
-            display: flex;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
             margin: 20px 0;
         }
         .stat-card {
-            background: white;
+            border: 1px solid #ccc;
             padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            flex: 1;
             text-align: center;
         }
         .device-card {
-            background: white;
-            margin: 15px 0;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border-left: 4px solid #3498db;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
         }
-        .status-available { border-left-color: #27ae60; }
-        .status-in_use { border-left-color: #e74c3c; }
-        .status-broken { border-left-color: #95a5a6; }
+        .status-available { border-left: 4px solid #28a745; }
+        .status-in_use { border-left: 4px solid #dc3545; }
+        .status-broken { border-left: 4px solid #6c757d; }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn:hover { background: #0056b3; }
+        .messages {
+            margin: 20px 0;
+        }
+        .message {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin: 5px 0;
+        }
+        .message.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .message.success {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        .user-info {
+            float: right;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🏢 AssetFlow - Система учёта оборудования</h1>
-        <p>Ваш надёжный помощник в управлении IT-активами</p>
+        <div class="user-info">
+            {{ user.username }} ({{ user.userprofile.role }})
+            <form method="post" action="{% url 'logout' %}" style="display: inline; margin-left: 10px;">
+                {% csrf_token %}
+                <button type="submit" class="btn" style="background: #6c757d; padding: 4px 8px; font-size: 12px;">Выйти</button>
+            </form>
+        </div>
+        <h1>AssetFlow</h1>
+        <p>Учёт IT-оборудования</p>
+        <div class="nav">
+            {% if user.is_authenticated and user.userprofile.role != 'analyst' %}
+                <a href="{% url 'device_list' %}" class="btn">Оборудование</a>
+            {% endif %}
+            {% if user.is_authenticated and user.userprofile.role == 'admin' %}
+                <a href="{% url 'manage_requests' %}" class="btn">Заявки</a>
+            {% endif %}
+            {% if user.is_authenticated and user.userprofile.role == 'tech' %}
+                <a href="{% url 'repair_list' %}" class="btn">Ремонты</a>
+            {% endif %}
+            {% if user.is_authenticated and user.userprofile.role == 'analyst' %}
+                <a href="{% url 'equipment_report' %}" class="btn">Отчёты</a>
+                <a href="{% url 'breakdown_statistics' %}" class="btn">Статистика</a>
+            {% endif %}
+        </div>
     </div>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <div class="content">
         {% block content %}

@@ -1,41 +1,48 @@
 {% extends 'inventory/base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Оборудование{% endblock %}
 
 {% block content %}
 <div class="stats">
     <div class="stat-card">
-        <h3>📦 Всего</h3>
-        <p style="font-size: 24px; margin: 10px 0; color: #2c3e50;">{{ stats.total }}</p>
+        <div>Всего</div>
+        <div style="font-size: 24px;">{{ stats.total }}</div>
     </div>
     <div class="stat-card">
-        <h3>✅ Доступно</h3>
-        <p style="font-size: 24px; margin: 10px 0; color: #27ae60;">{{ stats.available }}</p>
+        <div>Доступно</div>
+        <div style="font-size: 24px; color: #28a745;">{{ stats.available }}</div>
     </div>
     <div class="stat-card">
-        <h3>🔄 Используется</h3>
-        <p style="font-size: 24px; margin: 10px 0; color: #e74c3c;">{{ stats.in_use }}</p>
+        <div>Используется</div>
+        <div style="font-size: 24px; color: #dc3545;">{{ stats.in_use }}</div>
     </div>
 </div>
 
-<h2>{{ title }}</h2>
-
 {% for device in devices %}
     <div class="device-card status-{{ device.status }}">
-        <h3>{{ device.model }} <small>({{ device.inventory_number }})</small></h3>
-        <p><strong>Тип:</strong> {{ device.device_type.name }}</p>
-        <p><strong>Статус:</strong>
+        <h3>{{ device.model }} ({{ device.inventory_number }})</h3>
+        <p>Тип: {{ device.device_type.name }}</p>
+        <p>Статус:
             {% if device.status == 'available' %}
-                <span style="color: #27ae60;">✅ Доступно</span>
+                <span style="color: #28a745;">Доступно</span>
             {% elif device.status == 'in_use' %}
-                <span style="color: #e74c3c;">🔄 У сотрудника</span>
+                <span style="color: #dc3545;">У сотрудника</span>
             {% else %}
-                <span style="color: #95a5a6;">⚠️ На ремонте</span>
+                <span style="color: #6c757d;">На ремонте</span>
             {% endif %}
         </p>
-        {% if device.purchase_date %}
-            <p><strong>Куплено:</strong> {{ device.purchase_date }}</p>
-        {% endif %}
+
+        <div style="margin-top: 10px;">
+            {% if device.status == 'available' and user.userprofile.role == 'employee'%}
+                <a href="{% url 'create_request' device.id %}" class="btn">Создать заявку</a>
+            {% endif %}
+
+            {% if device.status == 'in_use' and user.is_authenticated and user.userprofile.role == 'employee' %}
+                {% if device.id in user_has_device %}
+                    <a href="{% url 'report_breakdown' device.id %}" class="btn" style="background: #dc3545;">Сообщить о поломке</a>
+            {% endif %}
+            {% endif %}
+        </div>
     </div>
 {% empty %}
     <div class="device-card">
