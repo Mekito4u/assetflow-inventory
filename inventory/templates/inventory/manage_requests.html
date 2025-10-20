@@ -8,6 +8,15 @@
 {% for req in pending_requests %}
 <div class="device-card">
     <h3>Заявка #{{ req.id }}</h3>
+
+    <div style="margin-bottom: 10px;">
+        <strong>AI-анализ:</strong>
+        {{ req.get_priority_badge }}
+        {% if req.ai_tags %}
+            | Теги: {% for tag in req.ai_tags %}<span style="background: #e9ecef; padding: 2px 6px; border-radius: 4px; margin: 0 2px;">{{ tag }}</span>{% endfor %}
+        {% endif %}
+    </div>
+
     <p><strong>Сотрудник:</strong> {{ req.employee.full_name }}</p>
     <p><strong>Оборудование:</strong> {{ req.device.model }} ({{ req.device.inventory_number }})</p>
     <p><strong>Цель:</strong> {{ req.purpose }}</p>
@@ -29,6 +38,15 @@
 {% for req in active_requests %}
 <div class="device-card">
     <h3>Заявка #{{ req.id }}</h3>
+
+    <div style="margin-bottom: 10px;">
+        <strong>AI-анализ:</strong>
+        {{ req.get_priority_badge }}
+        {% if req.ai_tags %}
+            | Теги: {% for tag in req.ai_tags %}<span style="background: #e9ecef; padding: 2px 6px; border-radius: 4px; margin: 0 2px;">{{ tag }}</span>{% endfor %}
+        {% endif %}
+    </div>
+
     <p><strong>Сотрудник:</strong> {{ req.employee.full_name }}</p>
     <p><strong>Оборудование:</strong> {{ req.device.model }} ({{ req.device.inventory_number }})</p>
     <p><strong>Цель:</strong> {{ req.purpose }}</p>

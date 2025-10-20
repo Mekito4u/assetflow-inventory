@@ -105,18 +105,31 @@ class Command(BaseCommand):
              'purpose': 'Для работы с базами данных'},
             {'employee_email': 'm.kozlova@company.ru', 'device_number': 'NB001', 'status': 'pending',
              'purpose': 'Для разработки React компонентов'},
+            {'employee_email': 'i.ivanov@company.ru', 'device_number': 'MSE001', 'status': 'pending',
+             'purpose': 'Мышь сломалась, не могу работать'},
+            {'employee_email': 'a.nikolaev@company.ru', 'device_number': 'KBD001', 'status': 'pending',
+             'purpose': 'Нужна механическая клавиатура для удобства программирования'},
+            {'employee_email': 's.sidorov@company.ru', 'device_number': 'MON001', 'status': 'pending',
+             'purpose': 'Сервер упал, все системы не работают, нужен монитор для диагностики'},
         ]
 
         for req_data in requests_data:
             employee = Employee.objects.get(email=req_data['employee_email'])
             device = Device.objects.get(inventory_number=req_data['device_number'])
 
-            Request.objects.create(
+            request = Request.objects.create(
                 employee=employee,
                 device=device,
                 status=req_data['status'],
                 purpose=req_data['purpose']
             )
+
+            try:
+                request.analyze_with_ai()
+                self.stdout.write(f'AI-анализ выполнен для заявки #{request.id}')
+            except Exception as e:
+                self.stdout.write(f'Ошибка AI-анализа для заявки #{request.id}: {e}')
+
         self.stdout.write('Созданы заявки')
 
     def create_repairs(self):

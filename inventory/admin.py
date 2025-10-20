@@ -28,9 +28,10 @@ class DeviceAdmin(admin.ModelAdmin):
 
 @admin.register(Request)
 class RequestAdmin(admin.ModelAdmin):
-    list_display = ('id', 'employee', 'device', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
+    list_display = ('id', 'employee', 'device', 'status', 'ai_priority_score', 'ai_tags', 'created_at')
+    list_filter = ('status', 'ai_priority_score', 'created_at')
     readonly_fields = ('created_at', 'updated_at')
+    ordering = ['-ai_priority_score']
 
 
 @admin.register(UserProfile)

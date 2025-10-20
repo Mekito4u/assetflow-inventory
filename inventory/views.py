@@ -1,7 +1,8 @@
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404,redirect
-from django.utils import timezone
 from django.contrib.auth import authenticate, login
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
+
 from .decorators import role_required
 from .models import *
 
@@ -67,7 +68,7 @@ def create_request(request, device_id):
             messages.error(request, 'На это оборудование уже есть активная заявка')
             return redirect('device_list')
 
-        Request.objects.create(
+        new_request = Request.objects.create(
             employee=employee,
             device=device,
             purpose=purpose,
@@ -89,7 +90,6 @@ def manage_requests(request):
     if request.user.username != "admin":
         messages.error(request, 'Требуются права администратора')
         return redirect('device_list')
-
 
     pending_requests = Request.objects.filter(status=Request.STATUS_PENDING)
     active_requests = Request.objects.filter(status=Request.STATUS_APPROVED)

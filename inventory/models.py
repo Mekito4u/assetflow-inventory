@@ -1,5 +1,6 @@
-from django.db import models
 from django.core.exceptions import ValidationError
+from django.db import models
+
 
 class DeviceType(models.Model):
     """Модель для типов оборудования (Ноутбук, Монитор, Мышь)"""
@@ -144,7 +145,7 @@ class Request(models.Model):
         verbose_name='Статус заявки'
     )
     purpose = models.TextField(
-        blank=True,
+        blank=False,
         verbose_name='Цель использования'
     )
     planned_return_date = models.DateField(
@@ -161,7 +162,35 @@ class Request(models.Model):
         verbose_name='Дата обновления'
     )
 
+    ai_priority_score = models.FloatField(
+        null=True,
+        blank=True,
+        verbose_name='AI Оценка приоритета',
+        help_text='1 (низкий) - 10 (критичный)'
+    )
+    ai_tags = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name='AI Теги',
+        help_text='Автоматические теги от AI'
+    )
+    ai_summary = models.TextField(
+        blank=True,
+        verbose_name='AI Резюме',
+        help_text='Краткое описание проблемы от AI'
+    )
+    ai_needs_clarification = models.BooleanField(
+        default=False,
+        verbose_name='AI: Требует уточнений',
+        help_text='Заявка требует дополнительных уточнений по мнению AI'
+    )
+
     def save(self, *args, **kwargs):
+        """
+        Сохраняет заявку с автоматической бизнес-логикой:
+        - Обновляет статусы оборудования
+        - Запускает AI-анализ для новых заявок
+        """
         is_new = self.pk is None
 
         if not is_new:
@@ -172,6 +201,7 @@ class Request(models.Model):
 
         super().save(*args, **kwargs)
 
+        # Бизнес-логика статусов оборудования
         if self.status == self.STATUS_APPROVED:
             self.device.status = Device.STATUS_IN_USE
             self.device.save()
@@ -190,6 +220,14 @@ class Request(models.Model):
                 self.device.status = Device.STATUS_AVAILABLE
             self.device.save()
 
+        # AI-анализ для новых заявок
+        if is_new and self.purpose:
+            try:
+                self.analyze_with_ai()
+            except Exception:
+                # Не ломаем сохранение заявки из-за ошибки AI
+                pass
+
     def delete(self, *args, **kwargs):
         if self.status == self.STATUS_APPROVED:
             self.device.status = Device.STATUS_AVAILABLE
@@ -202,6 +240,69 @@ class Request(models.Model):
 
         if Request.objects.filter(device=self.device, status=self.STATUS_PENDING).exclude(id=self.id).exists():
             raise ValidationError('На это оборудование уже есть активная заявка')
+
+    def analyze_with_ai(self):
+        """
+        Запускает AI-анализ заявки и сохраняет результаты
+
+        Автоматически определяет приоритет, теги и резюме на основе
+        данных сотрудника, оборудования и цели использования
+        """
+        try:
+            from .services.gigachat_service import GigaChatService
+
+            service = GigaChatService()
+
+            employee_position = getattr(self.employee, 'position', 'Не указана')
+            device_type = self.device.device_type.name
+
+            result = service.analyze_request(
+                employee_position=employee_position,
+                device_type=device_type,
+                purpose=self.purpose
+            )
+
+            self.ai_priority_score = result.get('priority_score', 5)
+            self.ai_tags = result.get('tags', [])
+            self.ai_summary = result.get('summary', '')
+            self.ai_needs_clarification = result.get('needs_clarification', False)
+
+            self.save(update_fields=[
+                'ai_priority_score', 'ai_tags', 'ai_summary',
+                'ai_needs_clarification'
+            ])
+
+        except Exception:
+            # Не прерываем работу системы из-за ошибок AI
+            pass
+
+    def get_priority_badge(self):
+        """
+        Возвращает HTML для цветного бейджа приоритета
+
+        Returns:
+            str: HTML span с цветным бейджем приоритета
+        """
+        from django.utils.safestring import mark_safe
+
+        if not self.ai_priority_score:
+            return mark_safe(
+                '<span style="display: inline-block; padding: 4px 8px; background: #6c757d; color: white; border-radius: 4px; font-weight: bold;">—</span>')
+
+        score = self.ai_priority_score
+
+        if score >= 8:
+            color = '#dc3545'  # красный
+        elif score >= 5:
+            color = '#ffc107'  # желтый
+        else:
+            color = '#28a745'  # зеленый
+
+        return mark_safe(
+            f'<span style="display: inline-block; padding: 4px 8px; background: {color}; color: white; border-radius: 4px; font-weight: bold;">{score}</span>')
+
+    get_priority_badge.allow_tags = True
+    get_priority_badge.short_description = 'Приоритет'
 
     def __str__(self):
         return f"Заявка #{self.id} - {self.employee} ({self.status})"

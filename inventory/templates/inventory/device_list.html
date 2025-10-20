@@ -34,13 +34,24 @@
 
         <div style="margin-top: 10px;">
             {% if device.status == 'available' and user.userprofile.role == 'employee'%}
-                <a href="{% url 'create_request' device.id %}" class="btn">Создать заявку</a>
+                <!-- ПРОВЕРКА НА АКТИВНУЮ ЗАЯВКУ -->
+                {% with pending_requests=device.request_set.all %}
+                    {% for req in pending_requests %}
+                        {% if req.status == 'pending' %}
+                            <button disabled class="btn" style="background: #6c757d;">
+                                ⏳ Есть активная заявка
+                            </button>
+                        {% endif %}
+                    {% empty %}
+                        <a href="{% url 'create_request' device.id %}" class="btn">Создать заявку</a>
+                    {% endfor %}
+                {% endwith %}
             {% endif %}
 
             {% if device.status == 'in_use' and user.is_authenticated and user.userprofile.role == 'employee' %}
                 {% if device.id in user_has_device %}
                     <a href="{% url 'report_breakdown' device.id %}" class="btn" style="background: #dc3545;">Сообщить о поломке</a>
-            {% endif %}
+                {% endif %}
             {% endif %}
         </div>
     </div>
