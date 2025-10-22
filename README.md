@@ -7,7 +7,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15.0-blue?logo=postgresql)](https://www.postgresql.org/)
 [![AI](https://img.shields.io/badge/AI-GigaChat%20API-orange)](https://developers.sber.ru/portal/products/gigachat-api)
 
-**↓ Готов к стажировке в бэкенд-разработке | Python + Django + PostgreSQL ↓**
+**↓ Готов к стажировке в бэкенд-разработке | Python + Django + PostgreSQL + GigaChat ↓**
 ---
 
 ## 🚀 О проекте
