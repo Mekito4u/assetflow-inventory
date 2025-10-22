@@ -77,8 +77,13 @@ python manage.py seed_data
 # Запуск
 python manage.py runserver
 ```
+Важно для AI-функционала:
+Создай файл .env в корне проекта
+Добавь переменную: GIGACHAT_API_KEY=your_api_key_here
+Получи API ключ на developers.sber.ru
 
 Доступ: http://localhost:8000
+
 
 ## 📸 Интерфейс системы
 
